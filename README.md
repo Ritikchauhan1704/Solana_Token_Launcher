@@ -6,7 +6,6 @@ A modern web application for creating SPL tokens on the Solana blockchain.
 ## Tech Stack
 
 - React + TypeScript
-- Vite
 - Tailwind CSS
 - Solana Wallet Adapter
 
