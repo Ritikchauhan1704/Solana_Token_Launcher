@@ -1,6 +1,4 @@
-# Solana Token Launchpad
-
-A modern web application for creating SPL tokens on the Solana blockchain.
+# Wallet adapter 
 
 
 ## Tech Stack
