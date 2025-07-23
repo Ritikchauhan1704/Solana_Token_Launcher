@@ -28,11 +28,11 @@ You need to have [Bun](https://bun.sh/) installed on your machine.
 
 1.  Clone the repository:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/Ritikchauhan1704/Solana_Token_Launcher
     ```
 2.  Navigate to the project directory:
     ```bash
-    cd wallet-adapter
+    cd Solana_Token_Launcher
     ```
 3.  Install the dependencies:
     ```bash
