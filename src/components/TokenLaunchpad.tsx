@@ -1,3 +1,6 @@
+import { createInitializeMint2Instruction, MINT_SIZE, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { Keypair, SystemProgram, Transaction } from "@solana/web3.js";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -5,11 +8,12 @@ import { z } from "zod";
 const TokenSchema = z.object({
   tokenName: z.string().min(1, "Token name is required"),
   tokenSymbol: z.string().min(1, "Token symbol is required"),
-  imageUrl: z.string().url("Must be a valid URL"),
+  imageUrl: z.url("Must be a valid URL"),
   initialSupply: z.string().refine((val) => /^\d+$/.test(val), {
     message: "Initial supply must be a number",
   }),
 });
+
 
 export function TokenLaunchpad() {
   const [tokenName, setTokenName] = useState("");
@@ -18,7 +22,10 @@ export function TokenLaunchpad() {
   const [initialSupply, setInitialSupply] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  
+  const wallet = useWallet();
+  const {connection} = useConnection()
+  const createToken = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const result = TokenSchema.safeParse({
@@ -40,6 +47,35 @@ export function TokenLaunchpad() {
 
     setErrors({});
     console.log("Submitted:", { tokenName, tokenSymbol, imageUrl, initialSupply });
+
+    const mintKeyPair = Keypair.generate();
+    const lamports = await connection.getMinimumBalanceForRentExemption(MINT_SIZE);
+    const transaction = new Transaction().add(
+      SystemProgram.createAccount({
+        fromPubkey: wallet.publicKey!,
+        newAccountPubkey: mintKeyPair.publicKey,
+        space: MINT_SIZE,
+        lamports,
+        programId: TOKEN_PROGRAM_ID,
+      }),
+      createInitializeMint2Instruction(
+        mintKeyPair.publicKey,
+        9,
+        wallet.publicKey!,
+        wallet.publicKey!,
+        TOKEN_PROGRAM_ID
+      )
+    )
+    transaction.feePayer = wallet.publicKey!;
+    transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+
+    transaction.partialSign(mintKeyPair);
+    await wallet.sendTransaction(transaction, connection)
+
+    console.log("Token mint created at", mintKeyPair.publicKey.toBase58());
+    
+
+
   };
 
   const inputClass = (field: string) =>
@@ -62,7 +98,7 @@ export function TokenLaunchpad() {
         </div>
 
         {/* Form */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={createToken}>
           {/* Token Name */}
           <div>
             <label className={labelClass}>Token Name</label>
@@ -120,7 +156,7 @@ export function TokenLaunchpad() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 px-6 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center group"
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 px-6 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 flex items-center justify-center group hover:cursor-pointer"
           >
             <svg
               className="w-6 h-6 mr-2 group-hover:rotate-90 transition-transform duration-300"
