@@ -1,36 +1,37 @@
-import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import {
+    ConnectionProvider,
+    WalletProvider,
+  } from "@solana/wallet-adapter-react";
+  import {
     WalletModalProvider,
     WalletDisconnectButton,
-    WalletMultiButton
-} from '@solana/wallet-adapter-react-ui';
-import '@solana/wallet-adapter-react-ui/styles.css';
-import { TokenLaunchpad } from './components/TokenLaunchpad';
-
-
-export default function App() {
+    WalletMultiButton,
+  } from "@solana/wallet-adapter-react-ui";
+  import "@solana/wallet-adapter-react-ui/styles.css";
+  import { TokenLaunchpad } from "./components/TokenLaunchpad";
+  import { clusterApiUrl } from "@solana/web3.js";
+  
+  export default function App() {
     return (
-        <div className="min-h-screen bg-gradient-to-b from-blue-50 to-indigo-50">
-            <ConnectionProvider endpoint="https://api.devnet.solana.com">
-                <WalletProvider wallets={[]} autoConnect>
-                    <WalletModalProvider>
-                        <div className="container mx-auto px-4 py-8">
-                            <div className="flex justify-between items-center mb-8">
-                                <div className="text-2xl font-bold text-gray-800">
-                                    Solana Token Factory
-                                </div>
-                                <div className="flex space-x-4">
-                                    <WalletMultiButton className="bg-white text-gray-800 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200" />
-                                    <WalletDisconnectButton className="bg-white text-gray-800 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 transition-colors duration-200" />
-                                </div>
-                            </div>
-                            <div className="max-w-4xl mx-auto">
-                                <TokenLaunchpad />
-                            </div>
-                        </div>
-                    </WalletModalProvider>
-                </WalletProvider>
-            </ConnectionProvider>
-        </div>
-    )
-}
+      <ConnectionProvider endpoint={clusterApiUrl("devnet")}>
+        <WalletProvider wallets={[]} autoConnect>
+          <WalletModalProvider>
+            <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white">
+              {/* Top Bar */}
+              <div className="flex justify-between items-center px-6 py-4 border-b border-white/10 shadow-lg backdrop-blur-md">
+                <h1 className="text-2xl font-bold text-purple-300">Solana Token Launcher</h1>
+                <div className="flex space-x-4">
+                  <WalletMultiButton className="!bg-purple-700 hover:!bg-purple-800 !text-white !rounded-lg !px-4 !py-2 !font-medium" />
+                  <WalletDisconnectButton className="!bg-red-700 hover:!bg-red-800 !text-white !rounded-lg !px-4 !py-2 !font-medium" />
+                </div>
+              </div>
+  
+              {/* Launchpad */}
+              <TokenLaunchpad />
+            </div>
+          </WalletModalProvider>
+        </WalletProvider>
+      </ConnectionProvider>
+    );
+  }
+  
