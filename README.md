@@ -20,10 +20,6 @@ This project is a React application that provides a user-friendly interface to c
 
 Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-### Prerequisites
-
-You need to have [Bun](https://bun.sh/) installed on your machine.
-
 ### Installation
 
 1.  Clone the repository:
